@@ -1,11 +1,26 @@
+import os
 import pyodbc
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def baglanti_olustur():
-    return pyodbc.connect(
-        "DRIVER={ODBC Driver 18 for SQL Server};"
-        "SERVER=LAPTOP-T2T6K43U;"
-        "DATABASE=OgrenciTakipDB;"
+    server = os.getenv("DB_SERVER")
+    database = os.getenv("DB_NAME")
+    driver = os.getenv("DB_DRIVER")
+
+    if not server or not database or not driver:
+        raise ValueError(
+            "Veritabanı ayarları bulunamadı. .env dosyasını kontrol edin."
+        )
+
+    connection_string = (
+        f"DRIVER={{{driver}}};"
+        f"SERVER={server};"
+        f"DATABASE={database};"
         "Trusted_Connection=yes;"
         "TrustServerCertificate=yes;"
     )
+
+    return pyodbc.connect(connection_string)
